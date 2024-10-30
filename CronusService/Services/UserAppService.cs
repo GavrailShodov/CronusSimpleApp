@@ -17,7 +17,8 @@ namespace CronusService.Services
     [DataContract(Name = "1A8A3BC4-831E-4674-A77E-F0F83BA7D436")]
     public class UserAppService : ApplicationService<UserAggregate>,
     ICommandHandler<CreateUser>,
-    ICommandHandler<AddMoney>
+    ICommandHandler<AddMoney>,
+    ICommandHandler<CreateWallet>
     {
         public UserAppService(IAggregateRepository repository) : base(repository) { }
 
@@ -28,7 +29,7 @@ namespace CronusService.Services
             {
                 var user = new UserAggregate();
 
-                user.CreateUser(command.Id, command.Name, command.Email, DateTimeOffset.UtcNow);
+                user.CreateUser(command.Id, command.WalletId, command.Name, command.Email, DateTimeOffset.UtcNow);
                 await repository.SaveAsync(user).ConfigureAwait(false);
             }
         }
@@ -40,7 +41,19 @@ namespace CronusService.Services
             if (UserResult.IsSuccess)
             {
                 var aggregate = UserResult.Data;
-                aggregate.AddMoney(command.Amount);
+                aggregate.AddMoney(command.WalletId, command.Amount);
+                await repository.SaveAsync(aggregate).ConfigureAwait(false);
+            }
+        }
+
+        public async Task HandleAsync(CreateWallet command)
+        {
+            ReadResult<UserAggregate> UserResult = await repository.LoadAsync<UserAggregate>(command.Id).ConfigureAwait(false);
+
+            if (UserResult.IsSuccess)
+            {
+                var aggregate = UserResult.Data;
+                aggregate.CreateWallet(command.WalletId, command.WalletId.ToString());
                 await repository.SaveAsync(aggregate).ConfigureAwait(false);
             }
         }

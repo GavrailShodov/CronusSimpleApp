@@ -5,17 +5,16 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using CronusService.Identifications;
-using System.Xml.Linq;
 using Elders.Cronus;
 
 namespace CronusService.Commands.Wallet
 {
-    [DataContract(Name = "3CAB86AB-0B47-4603-8162-850126240F95")]
-    public class AddMoney : ICommand
+    [DataContract(Name = "4b4784d0-e56a-44a7-b202-b53c7a6c9b5b")]
+    public class CreateWallet : ICommand
     {
-        public AddMoney() { }
+        public CreateWallet() { }
 
-        public AddMoney(UserId id, WalletId walletId, decimal amount, DateTimeOffset timestamp)
+        public CreateWallet(UserId id, WalletId walletId, decimal amount, DateTimeOffset timestamp)
         {
 
             if (id is null) throw new ArgumentNullException(nameof(id));

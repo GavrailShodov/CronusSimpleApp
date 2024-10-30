@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35410.144 d17.12
+VisualStudioVersion = 17.12.35410.144
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronusSimpleApp", "CronusSimpleApp\CronusSimpleApp.csproj", "{35632346-8784-451F-887E-73136E45F3E6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronusService", "CronusService\CronusService.csproj", "{2724A5D1-FE6F-4CB9-8359-15BAEAB80616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{5469D715-C514-4AEE-A71F-F6F8EE0E5848}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2724A5D1-FE6F-4CB9-8359-15BAEAB80616}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2724A5D1-FE6F-4CB9-8359-15BAEAB80616}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2724A5D1-FE6F-4CB9-8359-15BAEAB80616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5469D715-C514-4AEE-A71F-F6F8EE0E5848}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5469D715-C514-4AEE-A71F-F6F8EE0E5848}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5469D715-C514-4AEE-A71F-F6F8EE0E5848}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5469D715-C514-4AEE-A71F-F6F8EE0E5848}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

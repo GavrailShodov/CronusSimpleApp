@@ -17,24 +17,26 @@ namespace CronusService.Aggregates
     {
         public UserAggregate() { }
 
-        public void CreateUser(UserId id, string name, string email, DateTimeOffset timestamp)
+        public void CreateUser(UserId id, WalletId walletId, string name, string email, DateTimeOffset timestamp)
         {
             IEvent @event = new UserCreated(id, name, email, timestamp);
             Apply(@event);
-            CreateWallet(name);
+            CreateWallet(walletId, name);
         }
 
-        private void CreateWallet(string name)
+        public void CreateWallet(WalletId walletId, string name)
         {
-            string id = Guid.NewGuid().ToString();
-            var walletid = new WalletId(id, state.Id);
-            IEvent @event = new WalletCreated(walletid, state.Id, name, 0, DateTimeOffset.UtcNow);
+            IEvent @event = new WalletCreated(walletId, state.Id, name, 0, DateTimeOffset.UtcNow);
             Apply(@event);
         }
 
-        public void AddMoney(decimal amount)
+        public void AddMoney(WalletId walletId, decimal amount)
         {
-            state.Wallet.AddMoney(amount, state.Id);
+            if (state.Wallet.ContainsKey(walletId) == false)
+            {
+                throw new Exception("Wallet key is missing is this aggregate dictionary");
+            }
+            state.Wallet[walletId].AddMoney(amount, state.Id);
         }
     }
 }

@@ -10,6 +10,7 @@ using CronusService.Events.User;
 using CronusService.Events.Wallet;
 using CronusService.Identifications;
 using Elders.Cronus;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CronusService.States
 {
@@ -21,7 +22,7 @@ namespace CronusService.States
 
         public string Email { get; set; }
 
-        public Wallet Wallet { get; set; }
+        public Dictionary<WalletId, Wallet> Wallet { get; set; }
 
         public DateTimeOffset Timestamp { get; private set; }
 
@@ -35,7 +36,11 @@ namespace CronusService.States
 
         public void When(WalletCreated @event)
         {
-            Wallet = new Wallet(Root, @event.WalletId, @event.Name, @event.Value);
+            if (Wallet == null)
+            {
+                Wallet = new Dictionary<WalletId, Wallet>();
+            }
+            Wallet.Add(@event.WalletId, new Wallet(Root, @event.WalletId, @event.Name, @event.Value));
         }
     }
 }

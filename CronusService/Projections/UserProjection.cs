@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -18,6 +19,7 @@ namespace CronusService.Projections
     [DataContract(Name = "f124a9b5-3ca0-4407-98d6-8bcc47d3bd12")]
     public class UserProjection : ProjectionDefinition<UserProjectionData, UserId>,
         IEventHandler<UserCreated>,
+        IEventHandler<WalletCreated>,
         IEventHandler<AddMoney>
     {
 
@@ -25,12 +27,13 @@ namespace CronusService.Projections
         {
             Subscribe<UserCreated>(x => x.Id);
             Subscribe<AddMoney>(x => x.UserId);
+            Subscribe<WalletCreated>(x => x.UserId);
         }
 
 
         public Task HandleAsync(UserCreated @event)
         {
-            State.Wallet = new WalletDto();
+            State.Wallet = new Dictionary<WalletId, WalletDto>();
 
             State.Id = @event.Id;
             State.Name = @event.Name;
@@ -42,8 +45,18 @@ namespace CronusService.Projections
 
         public Task HandleAsync(AddMoney @event)
         {
-            State.Wallet.Name = @event.WalletId.ToString();
-            State.Wallet.Amount += @event.Value;
+            State.Wallet[@event.WalletId].Amount += @event.Value;
+
+            return Task.CompletedTask;
+
+        }
+
+        public Task HandleAsync(WalletCreated @event)
+        {
+            var wallet = new WalletDto();
+            wallet.Name = @event.Name;
+            wallet.Amount = 0;
+            State.Wallet.Add(@event.WalletId, wallet);
 
             return Task.CompletedTask;
 
@@ -63,7 +76,7 @@ namespace CronusService.Projections
         public string Email { get; set; }
 
         [DataMember(Order = 4)]
-        public WalletDto Wallet { get; set; }
+        public Dictionary<WalletId, WalletDto> Wallet { get; set; }
 
         [DataMember(Order = 5)]
         public DateTimeOffset Timestamp { get; set; }

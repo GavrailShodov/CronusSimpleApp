@@ -16,7 +16,7 @@ namespace CronusService.Commands.User
     {
         public CreateUser() { }
 
-        public CreateUser(UserId id, string name, string email, DateTimeOffset timestamp)
+        public CreateUser(UserId id, WalletId walletId, string name, string email, DateTimeOffset timestamp)
         {
 
             if (id is null) throw new ArgumentNullException(nameof(id));
@@ -28,19 +28,24 @@ namespace CronusService.Commands.User
             this.Name = name;
             this.Email = email;
             this.Timestamp = timestamp;
+            WalletId = walletId;
         }
 
         [DataMember(Order = 1)]
         public UserId Id { get; private set; }
 
+
         [DataMember(Order = 2)]
+        public WalletId WalletId { get; private set; }
+
+        [DataMember(Order = 3)]
         public string Name { get; private set; }
 
 
-        [DataMember(Order = 3)]
+        [DataMember(Order = 4)]
         public string Email { get; private set; }
 
-        [DataMember(Order = 4)]
+        [DataMember(Order = 5)]
         public DateTimeOffset Timestamp { get; private set; }
 
         public override string ToString()

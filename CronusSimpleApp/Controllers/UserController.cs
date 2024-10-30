@@ -34,22 +34,45 @@ namespace CronusSimpleApp.Controllers
             string Userid = Guid.NewGuid().ToString();
             UserId userId = new UserId(Userid);
 
-            CreateUser command = new CreateUser(userId, request.Name, request.Email, DateTimeOffset.UtcNow);
+
+            string id = Guid.NewGuid().ToString();
+            var walletid = new WalletId(id, userId);
+
+            CreateUser command = new CreateUser(userId, walletid, request.Name, request.Email, DateTimeOffset.UtcNow);
 
             if (_publisher.Publish(command) == false)
             {
                 return Problem($"Unable to publish command. {command.Id}: {command.Name}");
             };
 
-            return Ok(userId);
+            return Ok(userId + walletid);
         }
 
         [HttpPost]
-        public IActionResult AddMoney(string user, decimal amount)
+        public IActionResult AddNewWallet(string userid)
+        {
+            UserId userId = new UserId(userid);
+
+            string id = Guid.NewGuid().ToString();
+            WalletId walletId = new WalletId(id, userId);
+
+            CreateWallet command = new CreateWallet(userId, walletId, 0, DateTimeOffset.UtcNow);
+
+            if (_publisher.Publish(command) == false)
+            {
+                return Problem($"Unable to publish command");
+            };
+
+            return Ok(userId + "|  |" + walletId);
+        }
+
+        [HttpPost]
+        public IActionResult AddMoney(string user, string wallet, decimal amount)
         {
             UserId userId = new UserId(user);
+            WalletId walletId = new WalletId(wallet, userId);
 
-            AddMoney command = new AddMoney(userId, amount, DateTimeOffset.UtcNow);
+            AddMoney command = new AddMoney(userId, walletId, amount, DateTimeOffset.UtcNow);
 
             if (_publisher.Publish(command) == false)
             {
@@ -60,7 +83,7 @@ namespace CronusSimpleApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTasksByUserIdAsync(string userId)
+        public async Task<IActionResult> GetUserByUserIdAsync(string userId)
         {
             UserId UserId = new UserId(userId);
             ReadResult<UserProjection> readResult = await _projectionReader.GetAsync<UserProjection>(UserId);
@@ -68,9 +91,21 @@ namespace CronusSimpleApp.Controllers
             if (readResult.IsSuccess == false)
                 return NotFound();
 
+            var output = new UserOtuput();
+            output.Id = readResult.Data.State.Id.ToString();
+            output.Name = readResult.Data.State.Name;
+            output.Email = readResult.Data.State.Email;
+            output.Timestamp = readResult.Data.State.Timestamp;
+            foreach (var kvp in readResult.Data.State.Wallet)
+            {
+                var wallet = new WalletDto();
+                wallet.Name = kvp.Value.Name;
+                wallet.Amount = kvp.Value.Amount;
+                output.Wallet.Add(kvp.Key.ToString(), wallet);
+            }
 
+            return Ok(output);
 
-            return Ok(readResult.Data.State);
         }
     }
 }
